@@ -7,6 +7,8 @@ An AI agent for a furniture retailer that runs on top of the store's ERP (STORIS
 3. **Tells customers when to book** delivery or pickup once their order is ready.
 4. **Sends order status updates** by text or email, like package tracking.
 
+Coming next: market-level demand estimates and live in-transit updates. See [Planned](#planned).
+
 > This repository describes how the agent works. The source code is private.
 > All numbers and customers shown here come from a synthetic dataset built to match the shape of STORIS data (21 months of history, about 10,700 orders). No real customer data is used.
 
@@ -87,10 +89,10 @@ For each of the 120 products, the agent forecasts the next 26 weeks of sales and
 |---|---|---|
 | Order now | 35 | 1,947 |
 | Order this week | 17 | 149 |
-| Order within 5 weeks | 46 | |
-| OK for now | 22 | |
+| Order within 5 weeks | 46 | n/a |
+| OK for now | 22 | n/a |
 
-It also flags 19 products that will run short *before* any new order could arrive, so the buyer knows to expedite or transfer stock instead.
+Units are shown for orders due now or this week. It also flags 19 products that will run short *before* any new order could arrive, so the buyer knows to expedite or transfer stock instead.
 
 **Vendor reliability (learned from 335 received purchase orders):**
 
@@ -138,7 +140,7 @@ Customers choose text or email. Each day the agent decides who needs a message, 
 > **Email, day-before reminder**
 > *Subject: Tomorrow: your delivery, Mon, Oct 12*
 > Hi Mason, see you tomorrow.
-> Delivery: Mon, Oct 12, between 8 AM and 12 PM. We'll text when your crew is on the way.
+> Delivery: Mon, Oct 12, between 8 AM and 12 PM. We'll text you if anything changes.
 > Before we arrive: clear a path to the room, measure doorways and stairs, and make sure someone 18 or older is home.
 > Balance due at delivery: $3,304.24.
 
@@ -157,6 +159,16 @@ Customers choose text or email. Each day the agent decides who needs a message, 
 
 ---
 
+## Planned
+
+### Market-level demand
+Today the forecast is per product. The next step is to estimate how likely each product is to be ordered again in a given market (for example, one showroom's trade area), so buyers can size reorders by local demand instead of store-wide averages. This needs a market field, such as showroom or ZIP code, in the data.
+
+### Live transit updates
+Today the agent estimates arrival from the open purchase order and the vendor's usual lateness. The next step is to follow orders while they are in transit: take shipment and dispatch events as they happen, refresh each order's ETA, and message the customer when something changes, such as shipped, delayed or out for delivery. This needs a carrier or delivery-dispatch data feed.
+
+---
+
 ## Status
 
 | Piece | State |
@@ -166,4 +178,5 @@ Customers choose text or email. Each day the agent decides who needs a message, 
 | Order status and customer notifications | Working as a dry run (messages are written, not sent) |
 | Live STORIS connection | Next, once API access is licensed |
 | Text and email sending | Next, after choosing a provider and recording text-message consent |
-| "Out for delivery" alerts | Needs delivery-truck dispatch data |
+| Live in-transit tracking and "out for delivery" alerts | Planned. Needs a carrier or delivery-dispatch data feed |
+| Market-level repeat-order likelihood | Planned. Needs a market field (showroom or ZIP) in the data |
